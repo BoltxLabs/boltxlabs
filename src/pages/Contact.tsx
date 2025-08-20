@@ -5,6 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { MapPin, Mail, Phone, Clock, Github, MessageCircle, Youtube } from "lucide-react";
+import { supabase } from "@/lib/supabase";
+import { useToast } from "@/hooks/use-toast";
+import { Link } from "react-router-dom";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -13,11 +16,56 @@ const Contact = () => {
     subject: "",
     message: ""
   });
+  const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission here
-    console.log("Form submitted:", formData);
+    setLoading(true);
+
+    try {
+      // Store contact message
+      const { error: dbError } = await supabase
+        .from('contacts')
+        .insert([{
+          ...formData,
+          status: 'new',
+          created_at: new Date().toISOString()
+        }]);
+
+      if (dbError) throw dbError;
+
+      // Send notification email to admin
+      await supabase.functions.invoke('send-notification', {
+        body: {
+          type: 'contact_message',
+          data: formData,
+          timestamp: new Date().toISOString()
+        }
+      });
+
+      toast({
+        title: "Message Sent!",
+        description: "We'll get back to you within 24 hours."
+      });
+
+      // Reset form
+      setFormData({
+        name: "",
+        email: "",
+        subject: "",
+        message: ""
+      });
+
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to send message. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -94,8 +142,8 @@ const Contact = () => {
           <div className="grid lg:grid-cols-3 gap-12">
             {/* Contact Form */}
             <div className="lg:col-span-2">
-              <Card className="p-8 animate-fade-in">
-                <h2 className="text-2xl font-bold mb-6">Send us a message</h2>
+              <Card className="glass-card p-8 animate-fade-in">
+                <h2 className="text-2xl font-bold mb-6 neon-text">Send us a message</h2>
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid sm:grid-cols-2 gap-6">
                     <div className="space-y-2">
@@ -106,6 +154,7 @@ const Contact = () => {
                         value={formData.name}
                         onChange={handleChange}
                         placeholder="Your full name"
+                        className="glass-card"
                         required
                       />
                     </div>
@@ -118,6 +167,7 @@ const Contact = () => {
                         value={formData.email}
                         onChange={handleChange}
                         placeholder="your@email.com"
+                        className="glass-card"
                         required
                       />
                     </div>
@@ -131,6 +181,7 @@ const Contact = () => {
                       value={formData.subject}
                       onChange={handleChange}
                       placeholder="What's this about?"
+                      className="glass-card"
                       required
                     />
                   </div>
@@ -144,6 +195,7 @@ const Contact = () => {
                       onChange={handleChange}
                       placeholder="Tell us more about your project or inquiry..."
                       rows={6}
+                      className="glass-card"
                       required
                     />
                   </div>
@@ -152,9 +204,10 @@ const Contact = () => {
                     type="submit" 
                     variant="hero" 
                     size="lg" 
-                    className="w-full sm:w-auto animate-tilt-hover"
+                    className="w-full sm:w-auto neon-glow"
+                    disabled={loading}
                   >
-                    Send Message
+                    {loading ? "Sending..." : "Send Message"}
                   </Button>
                 </form>
               </Card>
@@ -215,9 +268,11 @@ const Contact = () => {
                   We're always interested in collaborating with researchers, 
                   educational institutions, and innovative companies.
                 </p>
-                <Button variant="secondary" size="sm" className="animate-tilt-hover">
-                  Partnership Opportunities
-                </Button>
+                <Link to="/partnership">
+                  <Button variant="secondary" size="sm" className="animate-tilt-hover neon-glow">
+                    Partnership Opportunities
+                  </Button>
+                </Link>
               </Card>
             </div>
           </div>

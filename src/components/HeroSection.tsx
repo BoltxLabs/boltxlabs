@@ -15,7 +15,7 @@ const HeroSection = () => {
             <div className="space-y-4">
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-balance">
                 Building the Future of
-                <span className="bg-gradient-primary bg-clip-text text-transparent"> Robotics</span>
+                <span className="bg-gradient-primary bg-clip-text text-transparent neon-text"> Robotics</span>
                 <br />
                 with AI and Innovation
               </h1>
@@ -33,7 +33,7 @@ const HeroSection = () => {
               <Button 
                 variant="hero" 
                 size="lg" 
-                className="group animate-tilt-hover"
+                className="group neon-glow"
               >
                 Explore Our Work
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -41,7 +41,7 @@ const HeroSection = () => {
               <Button 
                 variant="glass" 
                 size="lg"
-                className="animate-tilt-hover"
+                className="glass-card"
               >
                 <Play className="w-5 h-5" />
                 Watch Demo
@@ -49,17 +49,17 @@ const HeroSection = () => {
             </div>
 
             {/* Stats */}
-            <div className="flex flex-wrap gap-8 pt-8 border-t">
+            <div className="flex flex-wrap gap-8 pt-8 border-t border-primary/20">
               <div className="text-center sm:text-left">
-                <div className="text-2xl font-bold text-primary">50+</div>
+                <div className="text-2xl font-bold text-primary neon-text">50+</div>
                 <div className="text-sm text-muted-foreground">Active Projects</div>
               </div>
               <div className="text-center sm:text-left">
-                <div className="text-2xl font-bold text-primary">1000+</div>
+                <div className="text-2xl font-bold text-primary neon-text">1000+</div>
                 <div className="text-sm text-muted-foreground">Students Reached</div>
               </div>
               <div className="text-center sm:text-left">
-                <div className="text-2xl font-bold text-primary">15+</div>
+                <div className="text-2xl font-bold text-primary neon-text">15+</div>
                 <div className="text-sm text-muted-foreground">Research Partners</div>
               </div>
             </div>
@@ -68,11 +68,11 @@ const HeroSection = () => {
           {/* Hero Image */}
           <div className="lg:order-last animate-slide-up">
             <div className="relative">
-              <div className="absolute inset-0 bg-gradient-primary rounded-xl blur-2xl opacity-20 animate-float"></div>
+              <div className="absolute inset-0 bg-gradient-primary rounded-xl blur-2xl opacity-30 animate-float neon-glow"></div>
               <img
                 src={heroImage}
                 alt="Modern robotics and AI systems"
-                className="relative rounded-xl shadow-lg animate-tilt-hover w-full h-auto object-cover"
+                className="relative rounded-xl shadow-lg animate-tilt-hover w-full h-auto object-cover glass-card border-primary/30"
               />
             </div>
           </div>
