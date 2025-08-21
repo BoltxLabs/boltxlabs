@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Github, MessageCircle, Youtube, Mail } from "lucide-react";
+import { Github, MessageCircle, Youtube, Mail, BookOpen } from "lucide-react";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -27,9 +27,10 @@ const Footer = () => {
 
   const socialLinks = [
     { icon: <Github className="w-5 h-5" />, href: "#", label: "GitHub" },
-    { icon: <MessageCircle className="w-5 h-5" />, href: "#", label: "Discord" },
-    { icon: <Youtube className="w-5 h-5" />, href: "#", label: "YouTube" },
-    { icon: <Mail className="w-5 h-5" />, href: "#", label: "Email" }
+    { icon: <MessageCircle className="w-5 h-5" />, href: "https://discord.gg/kQNR8SZbbg", label: "Discord" },
+    { icon: <Youtube className="w-5 h-5" />, href: "https://www.youtube.com/@BOLTX-k7", label: "YouTube" },
+    { icon: <BookOpen className="w-5 h-5" />, href: "https://hashnode.com/@BlotXLabs", label: "Blog" },
+    { icon: <Mail className="w-5 h-5" />, href: "mailto:boltx.1700@gmail.com", label: "Email" }
   ];
 
   return (
