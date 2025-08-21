@@ -23,6 +23,16 @@ const Contact = () => {
     e.preventDefault();
     setLoading(true);
 
+    if (!supabase) {
+      toast({
+        title: "Error",
+        description: "Database not configured. Please check your environment variables.",
+        variant: "destructive"
+      });
+      setLoading(false);
+      return;
+    }
+
     try {
       // Store contact message
       const { error: dbError } = await supabase

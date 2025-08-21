@@ -45,6 +45,16 @@ export const AdminDashboard = () => {
   }, [user]);
 
   const fetchData = async () => {
+    if (!supabase) {
+      toast({
+        title: "Error",
+        description: "Database not configured",
+        variant: "destructive"
+      });
+      setLoading(false);
+      return;
+    }
+
     try {
       const [contactsRes, partnershipsRes] = await Promise.all([
         supabase.from('contacts').select('*').order('created_at', { ascending: false }),
@@ -65,6 +75,8 @@ export const AdminDashboard = () => {
   };
 
   const updateContactStatus = async (id: string, status: Contact['status']) => {
+    if (!supabase) return;
+
     try {
       await supabase.from('contacts').update({ status }).eq('id', id);
       setContacts(prev => prev.map(c => c.id === id ? { ...c, status } : c));
@@ -79,6 +91,8 @@ export const AdminDashboard = () => {
   };
 
   const updatePartnershipStatus = async (id: string, status: Partnership['status']) => {
+    if (!supabase) return;
+
     try {
       await supabase.from('partnerships').update({ status }).eq('id', id);
       setPartnerships(prev => prev.map(p => p.id === id ? { ...p, status } : p));

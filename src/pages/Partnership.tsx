@@ -26,6 +26,16 @@ const Partnership = () => {
     e.preventDefault();
     setLoading(true);
 
+    if (!supabase) {
+      toast({
+        title: "Error",
+        description: "Database not configured. Please check your environment variables.",
+        variant: "destructive"
+      });
+      setLoading(false);
+      return;
+    }
+
     try {
       // Store partnership application
       const { error: dbError } = await supabase

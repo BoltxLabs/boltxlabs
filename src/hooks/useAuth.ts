@@ -32,6 +32,11 @@ export const useAuthProvider = (): AuthContextType => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!supabase) {
+      setLoading(false);
+      return;
+    }
+
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
@@ -66,6 +71,10 @@ export const useAuthProvider = (): AuthContextType => {
   }, []);
 
   const signUp = async (email: string, password: string) => {
+    if (!supabase) {
+      return { error: 'Supabase not configured. Please check your environment variables.' };
+    }
+
     try {
       const { error } = await supabase.auth.signUp({
         email,
@@ -93,6 +102,10 @@ export const useAuthProvider = (): AuthContextType => {
   };
 
   const signIn = async (email: string, password: string) => {
+    if (!supabase) {
+      return { error: 'Supabase not configured. Please check your environment variables.' };
+    }
+
     try {
       const { error } = await supabase.auth.signInWithPassword({
         email,
@@ -107,6 +120,10 @@ export const useAuthProvider = (): AuthContextType => {
   };
 
   const adminSignIn = async (password: string) => {
+    if (!supabase) {
+      return { error: 'Supabase not configured. Please check your environment variables.' };
+    }
+
     if (password !== 'BoltXLabs@27') {
       return { error: 'Invalid admin password' };
     }
@@ -125,7 +142,9 @@ export const useAuthProvider = (): AuthContextType => {
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    if (supabase) {
+      await supabase.auth.signOut();
+    }
   };
 
   return {
