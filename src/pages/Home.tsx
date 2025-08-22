@@ -59,13 +59,13 @@ const Home = () => {
             {features.map((feature, index) => (
               <Card 
                 key={index} 
-                className="p-8 text-center hover:shadow-md transition-all duration-normal animate-tilt-hover animate-fade-in"
+                className="p-8 text-center glass-card card-3d animate-fade-in"
                 style={{ animationDelay: `${index * 200}ms` }}
               >
-                <div className="w-16 h-16 bg-gradient-primary rounded-xl flex items-center justify-center mx-auto mb-6 text-primary-foreground">
+                <div className="w-16 h-16 bg-gradient-primary rounded-xl flex items-center justify-center mx-auto mb-6 text-primary-foreground animate-float neon-glow">
                   {feature.icon}
                 </div>
-                <h3 className="text-xl font-semibold mb-4">{feature.title}</h3>
+                <h3 className="text-xl font-semibold mb-4 neon-text">{feature.title}</h3>
                 <p className="text-muted-foreground">{feature.description}</p>
               </Card>
             ))}
@@ -95,19 +95,19 @@ const Home = () => {
             {projects.map((project, index) => (
               <Card 
                 key={index} 
-                className="p-6 hover:shadow-md transition-all duration-normal animate-tilt-hover group animate-slide-up"
+                className="p-6 glass-card card-3d group animate-slide-up"
                 style={{ animationDelay: `${index * 200}ms` }}
               >
                 <div className="flex items-center gap-2 mb-4">
-                  <span className="px-3 py-1 bg-primary/10 text-primary text-sm rounded-full font-medium">
+                  <span className="px-3 py-1 bg-primary/20 text-primary text-sm rounded-full font-medium neon-glow animate-pulse-glow">
                     {project.category}
                   </span>
                 </div>
-                <h3 className="text-xl font-semibold mb-3 group-hover:text-primary transition-colors">
+                <h3 className="text-xl font-semibold mb-3 group-hover:text-primary transition-colors neon-text">
                   {project.title}
                 </h3>
                 <p className="text-muted-foreground mb-6">{project.description}</p>
-                <Button variant="ghost" className="group-hover:bg-primary/10 transition-colors">
+                <Button variant="ghost" className="group-hover:bg-primary/20 transition-colors animate-tilt-hover neon-glow">
                   Learn More
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Button>

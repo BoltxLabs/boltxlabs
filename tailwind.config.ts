@@ -122,10 +122,78 @@ export default {
 				},
 				'float': {
 					'0%, 100%': {
-						transform: 'translateY(0px)'
+						transform: 'translateY(0px) rotateX(0deg)'
+					},
+					'33%': {
+						transform: 'translateY(-15px) rotateX(5deg)'
+					},
+					'66%': {
+						transform: 'translateY(-8px) rotateX(-3deg)'
+					}
+				},
+				'floating-3d': {
+					'0%, 100%': {
+						transform: 'translateY(0px) rotateX(0deg) rotateZ(0deg)'
+					},
+					'25%': {
+						transform: 'translateY(-20px) rotateX(10deg) rotateZ(5deg)'
 					},
 					'50%': {
-						transform: 'translateY(-10px)'
+						transform: 'translateY(-15px) rotateX(-5deg) rotateZ(-3deg)'
+					},
+					'75%': {
+						transform: 'translateY(-25px) rotateX(8deg) rotateZ(2deg)'
+					}
+				},
+				'rotate-3d': {
+					'0%': {
+						transform: 'rotateX(0deg) rotateY(0deg) rotateZ(0deg)'
+					},
+					'25%': {
+						transform: 'rotateX(90deg) rotateY(90deg) rotateZ(0deg)'
+					},
+					'50%': {
+						transform: 'rotateX(180deg) rotateY(180deg) rotateZ(90deg)'
+					},
+					'75%': {
+						transform: 'rotateX(270deg) rotateY(270deg) rotateZ(180deg)'
+					},
+					'100%': {
+						transform: 'rotateX(360deg) rotateY(360deg) rotateZ(270deg)'
+					}
+				},
+				'cube-rotate': {
+					'0%': {
+						transform: 'rotateX(0deg) rotateY(0deg)'
+					},
+					'100%': {
+						transform: 'rotateX(360deg) rotateY(360deg)'
+					}
+				},
+				'pulse-glow': {
+					'0%, 100%': {
+						boxShadow: '0 0 20px hsl(270 95% 68% / 0.5)'
+					},
+					'50%': {
+						boxShadow: '0 0 60px hsl(270 95% 68% / 0.9), 0 0 100px hsl(280 85% 75% / 0.6)'
+					}
+				},
+				'morph': {
+					'0%, 100%': {
+						borderRadius: '20px',
+						transform: 'scale(1)'
+					},
+					'25%': {
+						borderRadius: '50px 20px',
+						transform: 'scale(1.05) rotateZ(5deg)'
+					},
+					'50%': {
+						borderRadius: '20px 50px',
+						transform: 'scale(0.95) rotateZ(-3deg)'
+					},
+					'75%': {
+						borderRadius: '40px 30px',
+						transform: 'scale(1.02) rotateZ(2deg)'
 					}
 				}
 			},
@@ -134,7 +202,12 @@ export default {
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'fade-in': 'fade-in 0.6s ease-out',
 				'slide-up': 'slide-up 0.8s ease-out',
-				'float': 'float 3s ease-in-out infinite'
+				'float': 'float 6s ease-in-out infinite',
+				'floating-3d': 'floating-3d 8s ease-in-out infinite',
+				'rotate-3d': 'rotate-3d 20s linear infinite',
+				'cube-rotate': 'cube-rotate 12s linear infinite',
+				'pulse-glow': 'pulse-glow 3s ease-in-out infinite',
+				'morph': 'morph 8s ease-in-out infinite'
 			}
 		}
 	},
