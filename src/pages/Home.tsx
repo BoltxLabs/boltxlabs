@@ -1,4 +1,5 @@
 import HeroSection from "@/components/HeroSection";
+import MouseTracker from "@/components/MouseTracker";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/enhanced-button";
 import { ArrowRight, Zap, Shield, Users, Lightbulb, Cpu, Globe } from "lucide-react";
@@ -43,6 +44,7 @@ const Home = () => {
 
   return (
     <div className="min-h-screen">
+      <MouseTracker />
       <HeroSection />
       
       {/* Features Section */}
@@ -62,10 +64,10 @@ const Home = () => {
                 className="p-8 text-center glass-card card-3d animate-fade-in"
                 style={{ animationDelay: `${index * 200}ms` }}
               >
-                <div className="w-16 h-16 bg-gradient-primary rounded-xl flex items-center justify-center mx-auto mb-6 text-primary-foreground animate-float neon-glow">
+                <div className="w-16 h-16 bg-gradient-primary rounded-xl flex items-center justify-center mx-auto mb-6 text-primary-foreground animate-float neon-glow interactive-hover click-effect mouse-track">
                   {feature.icon}
                 </div>
-                <h3 className="text-xl font-semibold mb-4 neon-text">{feature.title}</h3>
+                <h3 className="text-xl font-semibold mb-4 neon-text interactive-glow">{feature.title}</h3>
                 <p className="text-muted-foreground">{feature.description}</p>
               </Card>
             ))}
@@ -83,7 +85,7 @@ const Home = () => {
                 Discover our latest innovations in robotics and AI
               </p>
             </div>
-            <Button variant="outline" asChild className="hidden sm:block">
+            <Button variant="outline" asChild className="hidden sm:block interactive-hover click-effect">
               <Link to="/projects">
                 View All Projects
                 <ArrowRight className="w-4 h-4" />
@@ -99,15 +101,15 @@ const Home = () => {
                 style={{ animationDelay: `${index * 200}ms` }}
               >
                 <div className="flex items-center gap-2 mb-4">
-                  <span className="px-3 py-1 bg-primary/20 text-primary text-sm rounded-full font-medium neon-glow animate-pulse-glow">
+                  <span className="px-3 py-1 bg-primary/20 text-primary text-sm rounded-full font-medium neon-glow animate-pulse-glow interactive-hover click-effect">
                     {project.category}
                   </span>
                 </div>
-                <h3 className="text-xl font-semibold mb-3 group-hover:text-primary transition-colors neon-text">
+                <h3 className="text-xl font-semibold mb-3 group-hover:text-primary transition-colors neon-text interactive-glow">
                   {project.title}
                 </h3>
                 <p className="text-muted-foreground mb-6">{project.description}</p>
-                <Button variant="ghost" className="group-hover:bg-primary/20 transition-colors animate-tilt-hover neon-glow">
+                <Button variant="ghost" className="group-hover:bg-primary/20 transition-colors animate-tilt-hover neon-glow interactive-hover click-effect">
                   Learn More
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Button>
@@ -136,11 +138,11 @@ const Home = () => {
             Join our community of innovators, researchers, and creators pushing the boundaries of robotics and AI.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button variant="secondary" size="lg" className="animate-tilt-hover">
+            <Button variant="secondary" size="lg" className="animate-tilt-hover interactive-hover click-effect">
               Join Our Community
               <Users className="w-5 h-5" />
             </Button>
-            <Button variant="glass" size="lg" asChild className="animate-tilt-hover">
+            <Button variant="glass" size="lg" asChild className="animate-tilt-hover interactive-hover click-effect">
               <Link to="/contact">
                 Get in Touch
                 <ArrowRight className="w-5 h-5" />
