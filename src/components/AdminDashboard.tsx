@@ -45,9 +45,15 @@ export const AdminDashboard = () => {
   }, [user]);
 
   const fetchData = async () => {
+    // Temporarily disabled until database tables are created
+    console.log('Admin dashboard requires database migration to be approved first');
+    setLoading(false);
+    return;
+    
+    /* Uncomment after migration approval:
     if (!supabase) {
       toast({
-        title: "Error",
+        title: "Error", 
         description: "Database not configured",
         variant: "destructive"
       });
@@ -72,9 +78,12 @@ export const AdminDashboard = () => {
     } finally {
       setLoading(false);
     }
+    */
   };
 
   const updateContactStatus = async (id: string, status: Contact['status']) => {
+    console.log('Database functions disabled until migration approval');
+    /* Uncomment after migration approval:
     if (!supabase) return;
 
     try {
@@ -88,9 +97,12 @@ export const AdminDashboard = () => {
         variant: "destructive"
       });
     }
+    */
   };
 
   const updatePartnershipStatus = async (id: string, status: Partnership['status']) => {
+    console.log('Database functions disabled until migration approval');
+    /* Uncomment after migration approval:
     if (!supabase) return;
 
     try {
@@ -104,6 +116,7 @@ export const AdminDashboard = () => {
         variant: "destructive"
       });
     }
+    */
   };
 
   if (user?.role !== 'admin') {
