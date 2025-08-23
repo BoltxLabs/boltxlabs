@@ -101,15 +101,15 @@ const Home = () => {
                 style={{ animationDelay: `${index * 200}ms` }}
               >
                 <div className="flex items-center gap-2 mb-4">
-                  <span className="px-3 py-1 bg-primary/20 text-primary text-sm rounded-full font-medium neon-glow animate-pulse-glow interactive-hover click-effect">
+                  <span className="px-3 py-1 bg-primary/20 text-primary text-sm rounded-full font-medium">
                     {project.category}
                   </span>
                 </div>
-                <h3 className="text-xl font-semibold mb-3 group-hover:text-primary transition-colors neon-text interactive-glow">
+                <h3 className="text-xl font-semibold mb-3 group-hover:text-primary transition-colors">
                   {project.title}
                 </h3>
                 <p className="text-muted-foreground mb-6">{project.description}</p>
-                <Button variant="ghost" className="group-hover:bg-primary/20 transition-colors animate-tilt-hover neon-glow interactive-hover click-effect">
+                <Button variant="ghost" className="group-hover:bg-primary/20 transition-colors interactive-hover">
                   Learn More
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Button>

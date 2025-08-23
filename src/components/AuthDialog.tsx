@@ -107,29 +107,29 @@ export const AuthDialog = ({ children }: AuthDialogProps) => {
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>
-      <DialogContent className="glass-card border-primary/30 max-w-md overflow-hidden">
+      <DialogContent className="glass-card border-primary/30 max-w-md overflow-hidden transform-none">
         <DialogHeader>
           <DialogTitle className="text-center neon-text">Access Portal</DialogTitle>
         </DialogHeader>
         
         <Tabs defaultValue="signin" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 glass-card interactive-hover">
-            <TabsTrigger value="signin" className="flex items-center gap-2 interactive-hover click-effect">
+          <TabsList className="grid w-full grid-cols-3 glass-card">
+            <TabsTrigger value="signin" className="flex items-center gap-2">
               <LogIn className="w-4 h-4" />
               Sign In
             </TabsTrigger>
-            <TabsTrigger value="signup" className="flex items-center gap-2 interactive-hover click-effect">
+            <TabsTrigger value="signup" className="flex items-center gap-2">
               <UserPlus className="w-4 h-4" />
               Sign Up
             </TabsTrigger>
-            <TabsTrigger value="admin" className="flex items-center gap-2 interactive-hover click-effect">
+            <TabsTrigger value="admin" className="flex items-center gap-2">
               <Shield className="w-4 h-4" />
               Admin
             </TabsTrigger>
           </TabsList>
           
           <TabsContent value="signin">
-            <Card className="glass-card border-primary/20 interactive-hover">
+            <Card className="glass-card border-primary/20">
               <form onSubmit={handleSignIn} className="space-y-4 p-6">
                 <div className="space-y-2">
                   <Label htmlFor="signin-email">Email</Label>
@@ -153,7 +153,7 @@ export const AuthDialog = ({ children }: AuthDialogProps) => {
                     required
                   />
                 </div>
-                <Button type="submit" className="w-full neon-glow click-effect" disabled={loading}>
+                <Button type="submit" className="w-full" disabled={loading}>
                   {loading ? "Signing in..." : "Sign In"}
                 </Button>
               </form>
@@ -161,7 +161,7 @@ export const AuthDialog = ({ children }: AuthDialogProps) => {
           </TabsContent>
           
           <TabsContent value="signup">
-            <Card className="glass-card border-primary/20 interactive-hover">
+            <Card className="glass-card border-primary/20">
               <form onSubmit={handleSignUp} className="space-y-4 p-6">
                 <div className="space-y-2">
                   <Label htmlFor="signup-email">Email</Label>
@@ -196,7 +196,7 @@ export const AuthDialog = ({ children }: AuthDialogProps) => {
                     required
                   />
                 </div>
-                <Button type="submit" className="w-full neon-glow click-effect" disabled={loading}>
+                <Button type="submit" className="w-full" disabled={loading}>
                   {loading ? "Creating account..." : "Sign Up"}
                 </Button>
               </form>
@@ -204,7 +204,7 @@ export const AuthDialog = ({ children }: AuthDialogProps) => {
           </TabsContent>
           
           <TabsContent value="admin">
-            <Card className="glass-card border-primary/20 interactive-hover">
+            <Card className="glass-card border-primary/20">
               <form onSubmit={handleAdminSignIn} className="space-y-4 p-6">
                 <div className="space-y-2">
                   <Label htmlFor="admin-password">Admin Password</Label>
@@ -218,7 +218,7 @@ export const AuthDialog = ({ children }: AuthDialogProps) => {
                     required
                   />
                 </div>
-                <Button type="submit" className="w-full neon-glow click-effect" disabled={loading}>
+                <Button type="submit" className="w-full" disabled={loading}>
                   {loading ? "Authenticating..." : "Admin Access"}
                 </Button>
               </form>
