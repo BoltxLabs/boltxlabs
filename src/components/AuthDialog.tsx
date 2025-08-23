@@ -107,7 +107,7 @@ export const AuthDialog = ({ children }: AuthDialogProps) => {
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>
-      <DialogContent className="glass-card border-primary/30 max-w-md fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-h-[85vh] overflow-y-auto">
+      <DialogContent className="glass-card border-primary/30 max-w-md overflow-hidden transform-none">
         <DialogHeader>
           <DialogTitle className="text-center neon-text">Access Portal</DialogTitle>
         </DialogHeader>

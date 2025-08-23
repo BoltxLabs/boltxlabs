@@ -100,14 +100,6 @@ export const useAuthProvider = (): AuthContextType => {
       });
 
       if (error) return { error: error.message };
-      
-      // If admin email signs in through regular login, they get admin role
-      if (email === 'admin@boltxlabs.com') {
-        setTimeout(() => {
-          setUser(prev => prev ? { ...prev, role: 'admin' } : null);
-        }, 100);
-      }
-      
       return {};
     } catch (error) {
       return { error: 'An unexpected error occurred' };
