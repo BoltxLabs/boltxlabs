@@ -14,7 +14,120 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      contacts: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          message: string
+          name: string
+          status: string
+          subject: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          message: string
+          name: string
+          status?: string
+          subject: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string
+          name?: string
+          status?: string
+          subject?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      partnerships: {
+        Row: {
+          budget: string | null
+          company: string
+          created_at: string
+          description: string
+          email: string
+          id: string
+          partnership_type: string
+          phone: string | null
+          status: string
+          timeline: string | null
+          updated_at: string
+        }
+        Insert: {
+          budget?: string | null
+          company: string
+          created_at?: string
+          description: string
+          email: string
+          id?: string
+          partnership_type: string
+          phone?: string | null
+          status?: string
+          timeline?: string | null
+          updated_at?: string
+        }
+        Update: {
+          budget?: string | null
+          company?: string
+          created_at?: string
+          description?: string
+          email?: string
+          id?: string
+          partnership_type?: string
+          phone?: string | null
+          status?: string
+          timeline?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      site_content: {
+        Row: {
+          admin_id: string | null
+          content: string | null
+          content_type: string
+          created_at: string
+          display_order: number | null
+          id: string
+          image_url: string | null
+          is_published: boolean
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          admin_id?: string | null
+          content?: string | null
+          content_type: string
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          image_url?: string | null
+          is_published?: boolean
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          admin_id?: string | null
+          content?: string | null
+          content_type?: string
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          image_url?: string | null
+          is_published?: boolean
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
