@@ -3,10 +3,13 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/enhanced-button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { Mail, Building, Calendar, Eye, Check, X } from "lucide-react";
+import { Mail, Building, Calendar, Eye, Check, X, Plus, Globe, Settings } from "lucide-react";
 
 interface Contact {
   id: string;
@@ -31,10 +34,28 @@ interface Partnership {
   created_at: string;
 }
 
+interface SiteContent {
+  id: string;
+  content_type: string;
+  title?: string;
+  content?: string;
+  image_url?: string;
+  is_published: boolean;
+  display_order: number;
+  created_at: string;
+}
+
 export const AdminDashboard = () => {
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [partnerships, setPartnerships] = useState<Partnership[]>([]);
+  const [siteContent, setSiteContent] = useState<SiteContent[]>([]);
   const [loading, setLoading] = useState(true);
+  const [newContent, setNewContent] = useState({
+    content_type: '',
+    title: '',
+    content: '',
+    image_url: ''
+  });
   const { user } = useAuth();
   const { toast } = useToast();
 
@@ -45,30 +66,16 @@ export const AdminDashboard = () => {
   }, [user]);
 
   const fetchData = async () => {
-    // Temporarily disabled until database tables are created
-    console.log('Admin dashboard requires database migration to be approved first');
-    setLoading(false);
-    return;
-    
-    /* Uncomment after migration approval:
-    if (!supabase) {
-      toast({
-        title: "Error", 
-        description: "Database not configured",
-        variant: "destructive"
-      });
-      setLoading(false);
-      return;
-    }
-
     try {
-      const [contactsRes, partnershipsRes] = await Promise.all([
+      const [contactsRes, partnershipsRes, contentRes] = await Promise.all([
         supabase.from('contacts').select('*').order('created_at', { ascending: false }),
-        supabase.from('partnerships').select('*').order('created_at', { ascending: false })
+        supabase.from('partnerships').select('*').order('created_at', { ascending: false }),
+        supabase.from('site_content').select('*').order('display_order', { ascending: true })
       ]);
 
-      if (contactsRes.data) setContacts(contactsRes.data);
-      if (partnershipsRes.data) setPartnerships(partnershipsRes.data);
+      if (contactsRes.data) setContacts(contactsRes.data as Contact[]);
+      if (partnershipsRes.data) setPartnerships(partnershipsRes.data as Partnership[]);
+      if (contentRes.data) setSiteContent(contentRes.data as SiteContent[]);
     } catch (error) {
       toast({
         title: "Error",
@@ -78,14 +85,9 @@ export const AdminDashboard = () => {
     } finally {
       setLoading(false);
     }
-    */
   };
 
   const updateContactStatus = async (id: string, status: Contact['status']) => {
-    console.log('Database functions disabled until migration approval');
-    /* Uncomment after migration approval:
-    if (!supabase) return;
-
     try {
       await supabase.from('contacts').update({ status }).eq('id', id);
       setContacts(prev => prev.map(c => c.id === id ? { ...c, status } : c));
@@ -97,14 +99,9 @@ export const AdminDashboard = () => {
         variant: "destructive"
       });
     }
-    */
   };
 
   const updatePartnershipStatus = async (id: string, status: Partnership['status']) => {
-    console.log('Database functions disabled until migration approval');
-    /* Uncomment after migration approval:
-    if (!supabase) return;
-
     try {
       await supabase.from('partnerships').update({ status }).eq('id', id);
       setPartnerships(prev => prev.map(p => p.id === id ? { ...p, status } : p));
@@ -116,7 +113,69 @@ export const AdminDashboard = () => {
         variant: "destructive"
       });
     }
-    */
+  };
+
+  const createContent = async () => {
+    if (!newContent.content_type || !newContent.title) {
+      toast({
+        title: "Error",
+        description: "Please fill in required fields",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase.from('site_content').insert([{
+        ...newContent,
+        admin_id: user?.id
+      }]).select();
+
+      if (error) throw error;
+
+      if (data) {
+        setSiteContent(prev => [...prev, data[0]]);
+        setNewContent({ content_type: '', title: '', content: '', image_url: '' });
+        toast({ title: "Content created successfully" });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to create content",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const toggleContentPublished = async (id: string, isPublished: boolean) => {
+    try {
+      await supabase.from('site_content').update({ is_published: isPublished }).eq('id', id);
+      setSiteContent(prev => prev.map(c => c.id === id ? { ...c, is_published: isPublished } : c));
+      toast({ 
+        title: isPublished ? "Content published" : "Content unpublished",
+        description: isPublished ? "Content is now visible to everyone" : "Content is now hidden"
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update content",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const deleteContent = async (id: string) => {
+    try {
+      await supabase.from('site_content').delete().eq('id', id);
+      setSiteContent(prev => prev.filter(c => c.id !== id));
+      toast({ title: "Content deleted successfully" });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete content",
+        variant: "destructive"
+      });
+    }
   };
 
   if (user?.role !== 'admin') {
@@ -149,8 +208,12 @@ export const AdminDashboard = () => {
           <p className="text-muted-foreground">Manage contacts and partnership applications</p>
         </div>
 
-        <Tabs defaultValue="contacts" className="space-y-6">
+        <Tabs defaultValue="content" className="space-y-6">
           <TabsList className="glass-card">
+            <TabsTrigger value="content" className="flex items-center gap-2">
+              <Globe className="w-4 h-4" />
+              Site Content ({siteContent.length})
+            </TabsTrigger>
             <TabsTrigger value="contacts" className="flex items-center gap-2">
               <Mail className="w-4 h-4" />
               Contacts ({contacts.length})
@@ -160,6 +223,117 @@ export const AdminDashboard = () => {
               Partnerships ({partnerships.length})
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="content" className="space-y-6">
+            <Card className="glass-card p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Plus className="w-5 h-5" />
+                <h3 className="text-lg font-semibold">Create New Content</h3>
+              </div>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="content-type">Content Type *</Label>
+                  <Input
+                    id="content-type"
+                    value={newContent.content_type}
+                    onChange={(e) => setNewContent(prev => ({ ...prev, content_type: e.target.value }))}
+                    placeholder="e.g., hero, feature, testimonial"
+                    className="glass-card"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="content-title">Title *</Label>
+                  <Input
+                    id="content-title"
+                    value={newContent.title}
+                    onChange={(e) => setNewContent(prev => ({ ...prev, title: e.target.value }))}
+                    placeholder="Content title"
+                    className="glass-card"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="content-image">Image URL</Label>
+                  <Input
+                    id="content-image"
+                    value={newContent.image_url}
+                    onChange={(e) => setNewContent(prev => ({ ...prev, image_url: e.target.value }))}
+                    placeholder="https://example.com/image.jpg"
+                    className="glass-card"
+                  />
+                </div>
+                <div className="space-y-2 md:col-span-2">
+                  <Label htmlFor="content-content">Content</Label>
+                  <Textarea
+                    id="content-content"
+                    value={newContent.content}
+                    onChange={(e) => setNewContent(prev => ({ ...prev, content: e.target.value }))}
+                    placeholder="Content text or description"
+                    className="glass-card"
+                    rows={3}
+                  />
+                </div>
+              </div>
+              <Button onClick={createContent} className="mt-4">
+                <Plus className="w-4 h-4 mr-2" />
+                Create Content
+              </Button>
+            </Card>
+
+            <div className="space-y-4">
+              {siteContent.map((content) => (
+                <Card key={content.id} className="glass-card p-6">
+                  <div className="flex justify-between items-start mb-4">
+                    <div>
+                      <div className="flex items-center gap-2 mb-2">
+                        <Badge variant="outline" className="capitalize">
+                          {content.content_type}
+                        </Badge>
+                        <Badge 
+                          variant={content.is_published ? "default" : "secondary"}
+                        >
+                          {content.is_published ? "Published" : "Draft"}
+                        </Badge>
+                      </div>
+                      <h3 className="font-semibold text-lg">{content.title}</h3>
+                      {content.content && (
+                        <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
+                          {content.content}
+                        </p>
+                      )}
+                      {content.image_url && (
+                        <p className="text-xs text-muted-foreground mt-2">
+                          Image: {content.image_url}
+                        </p>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                      <Calendar className="w-3 h-3" />
+                      {new Date(content.created_at).toLocaleDateString()}
+                    </div>
+                  </div>
+                  
+                  <div className="flex gap-2">
+                    <Button 
+                      size="sm"
+                      variant={content.is_published ? "secondary" : "default"}
+                      onClick={() => toggleContentPublished(content.id, !content.is_published)}
+                    >
+                      <Globe className="w-4 h-4 mr-2" />
+                      {content.is_published ? "Unpublish" : "Publish"}
+                    </Button>
+                    <Button 
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => deleteContent(content.id)}
+                    >
+                      <X className="w-4 h-4 mr-2" />
+                      Delete
+                    </Button>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </TabsContent>
 
           <TabsContent value="contacts" className="space-y-4">
             {contacts.length === 0 ? (

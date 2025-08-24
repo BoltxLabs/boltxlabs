@@ -14,7 +14,6 @@ interface AuthContextType {
   signUp: (email: string, password: string) => Promise<{ error?: string }>;
   signIn: (email: string, password: string) => Promise<{ error?: string }>;
   signOut: () => Promise<void>;
-  adminSignIn: (password: string) => Promise<{ error?: string }>;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -114,23 +113,6 @@ export const useAuthProvider = (): AuthContextType => {
     }
   };
 
-  const adminSignIn = async (password: string) => {
-    if (password !== 'BoltXLabs@27') {
-      return { error: 'Invalid admin password' };
-    }
-
-    try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email: 'admin@boltxlabs.com',
-        password: 'BoltXLabs@27'
-      });
-
-      if (error) return { error: error.message };
-      return {};
-    } catch (error) {
-      return { error: 'An unexpected error occurred' };
-    }
-  };
 
   const signOut = async () => {
     await supabase.auth.signOut();
@@ -141,7 +123,6 @@ export const useAuthProvider = (): AuthContextType => {
     loading,
     signUp,
     signIn,
-    signOut,
-    adminSignIn
+    signOut
   };
 };

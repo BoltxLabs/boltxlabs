@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { LogIn, UserPlus, Shield } from "lucide-react";
+import { LogIn, UserPlus } from "lucide-react";
 
 interface AuthDialogProps {
   children: React.ReactNode;
@@ -16,12 +16,11 @@ interface AuthDialogProps {
 export const AuthDialog = ({ children }: AuthDialogProps) => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { signIn, signUp, adminSignIn } = useAuth();
+  const { signIn, signUp } = useAuth();
   const { toast } = useToast();
 
   const [signInData, setSignInData] = useState({ email: "", password: "" });
   const [signUpData, setSignUpData] = useState({ email: "", password: "", confirmPassword: "" });
-  const [adminPassword, setAdminPassword] = useState("");
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -79,41 +78,19 @@ export const AuthDialog = ({ children }: AuthDialogProps) => {
     setLoading(false);
   };
 
-  const handleAdminSignIn = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    
-    const { error } = await adminSignIn(adminPassword);
-    
-    if (error) {
-      toast({
-        title: "Error",
-        description: error,
-        variant: "destructive"
-      });
-    } else {
-      toast({
-        title: "Admin Access Granted",
-        description: "Welcome, Administrator!"
-      });
-      setOpen(false);
-    }
-    
-    setLoading(false);
-  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>
-      <DialogContent className="glass-card border-primary/30 max-w-md fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-h-[85vh] overflow-y-auto">
+      <DialogContent className="glass-card border-primary/30 max-w-md mx-auto">
         <DialogHeader>
           <DialogTitle className="text-center neon-text">Access Portal</DialogTitle>
         </DialogHeader>
         
         <Tabs defaultValue="signin" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 glass-card">
+          <TabsList className="grid w-full grid-cols-2 glass-card">
             <TabsTrigger value="signin" className="flex items-center gap-2">
               <LogIn className="w-4 h-4" />
               Sign In
@@ -121,10 +98,6 @@ export const AuthDialog = ({ children }: AuthDialogProps) => {
             <TabsTrigger value="signup" className="flex items-center gap-2">
               <UserPlus className="w-4 h-4" />
               Sign Up
-            </TabsTrigger>
-            <TabsTrigger value="admin" className="flex items-center gap-2">
-              <Shield className="w-4 h-4" />
-              Admin
             </TabsTrigger>
           </TabsList>
           
@@ -203,27 +176,6 @@ export const AuthDialog = ({ children }: AuthDialogProps) => {
             </Card>
           </TabsContent>
           
-          <TabsContent value="admin">
-            <Card className="glass-card border-primary/20">
-              <form onSubmit={handleAdminSignIn} className="space-y-4 p-6">
-                <div className="space-y-2">
-                  <Label htmlFor="admin-password">Admin Password</Label>
-                  <Input
-                    id="admin-password"
-                    type="password"
-                    value={adminPassword}
-                    onChange={(e) => setAdminPassword(e.target.value)}
-                    className="glass-card"
-                    placeholder="Enter admin password"
-                    required
-                  />
-                </div>
-                <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? "Authenticating..." : "Admin Access"}
-                </Button>
-              </form>
-            </Card>
-          </TabsContent>
         </Tabs>
       </DialogContent>
     </Dialog>

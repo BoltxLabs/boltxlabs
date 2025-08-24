@@ -55,6 +55,18 @@ const Navigation = () => {
                 <span className="text-sm text-muted-foreground">
                   Welcome, {user.email}
                 </span>
+                {user.role === 'admin' && (
+                  <Link
+                    to="/admin"
+                    className={`text-sm font-medium px-3 py-1 rounded-md transition-colors duration-fast ${
+                      isActive("/admin")
+                        ? "text-primary bg-primary/10 neon-text"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                    }`}
+                  >
+                    Admin
+                  </Link>
+                )}
                 <Button 
                   variant="ghost" 
                   size="sm"
@@ -109,6 +121,19 @@ const Navigation = () => {
               {user ? (
                 <div className="space-y-2">
                   <p className="text-sm text-muted-foreground">Welcome, {user.email}</p>
+                  {user.role === 'admin' && (
+                    <Link
+                      to="/admin"
+                      className={`block px-3 py-2 rounded-md text-base font-medium transition-colors duration-fast ${
+                        isActive("/admin")
+                          ? "text-primary bg-primary/10 neon-text"
+                          : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                      }`}
+                      onClick={() => setIsOpen(false)}
+                    >
+                      Admin Dashboard
+                    </Link>
+                  )}
                   <Button 
                     variant="ghost" 
                     size="sm" 
