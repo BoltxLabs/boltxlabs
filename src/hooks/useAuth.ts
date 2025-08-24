@@ -37,7 +37,7 @@ export const useAuthProvider = (): AuthContextType => {
         setUser({
           id: session.user.id,
           email: session.user.email!,
-          role: session.user.email === 'admin@boltxlabs.com' ? 'admin' : 'member',
+          role: session.user.email === 'boltx.1700@gmail.com' ? 'admin' : 'member',
           created_at: session.user.created_at
         });
       }
@@ -51,7 +51,7 @@ export const useAuthProvider = (): AuthContextType => {
           setUser({
             id: session.user.id,
             email: session.user.email!,
-            role: session.user.email === 'admin@boltxlabs.com' ? 'admin' : 'member',
+            role: session.user.email === 'boltx.1700@gmail.com' ? 'admin' : 'member',
             created_at: session.user.created_at
           });
         } else {
@@ -101,7 +101,7 @@ export const useAuthProvider = (): AuthContextType => {
       if (error) return { error: error.message };
       
       // If admin email signs in through regular login, they get admin role
-      if (email === 'admin@boltxlabs.com') {
+      if (email === 'boltx.1700@gmail.com') {
         setTimeout(() => {
           setUser(prev => prev ? { ...prev, role: 'admin' } : null);
         }, 100);
