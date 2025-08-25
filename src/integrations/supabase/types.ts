@@ -14,6 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
+      blogs: {
+        Row: {
+          author: string
+          category: string
+          content: string
+          created_at: string
+          excerpt: string | null
+          featured_image_url: string | null
+          id: string
+          is_featured: boolean
+          read_time: number | null
+          status: string
+          tags: string[] | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author?: string
+          category?: string
+          content: string
+          created_at?: string
+          excerpt?: string | null
+          featured_image_url?: string | null
+          id?: string
+          is_featured?: boolean
+          read_time?: number | null
+          status?: string
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author?: string
+          category?: string
+          content?: string
+          created_at?: string
+          excerpt?: string | null
+          featured_image_url?: string | null
+          id?: string
+          is_featured?: boolean
+          read_time?: number | null
+          status?: string
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       contacts: {
         Row: {
           created_at: string
@@ -43,6 +91,48 @@ export type Database = {
           name?: string
           status?: string
           subject?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          is_sent: boolean
+          message: string
+          notification_type: string
+          scheduled_at: string | null
+          sent_at: string | null
+          target_audience: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_sent?: boolean
+          message: string
+          notification_type?: string
+          scheduled_at?: string | null
+          sent_at?: string | null
+          target_audience?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_sent?: boolean
+          message?: string
+          notification_type?: string
+          scheduled_at?: string | null
+          sent_at?: string | null
+          target_audience?: string
+          title?: string
           updated_at?: string
         }
         Relationships: []
@@ -124,6 +214,81 @@ export type Database = {
           image_url?: string | null
           is_published?: boolean
           title?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      site_settings: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          setting_key: string
+          setting_type: string
+          setting_value: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          setting_key: string
+          setting_type?: string
+          setting_value: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          setting_key?: string
+          setting_type?: string
+          setting_value?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      team_members: {
+        Row: {
+          bio: string | null
+          created_at: string
+          display_order: number | null
+          email: string | null
+          github_url: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          linkedin_url: string | null
+          name: string
+          position: string
+          updated_at: string
+        }
+        Insert: {
+          bio?: string | null
+          created_at?: string
+          display_order?: number | null
+          email?: string | null
+          github_url?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          linkedin_url?: string | null
+          name: string
+          position: string
+          updated_at?: string
+        }
+        Update: {
+          bio?: string | null
+          created_at?: string
+          display_order?: number | null
+          email?: string | null
+          github_url?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          linkedin_url?: string | null
+          name?: string
+          position?: string
           updated_at?: string
         }
         Relationships: []

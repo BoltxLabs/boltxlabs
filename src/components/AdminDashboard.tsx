@@ -1,15 +1,21 @@
-import { useState, useEffect } from "react";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/enhanced-button";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/hooks/useAuth";
-import { useToast } from "@/hooks/use-toast";
-import { Mail, Building, Calendar, Eye, Check, X, Plus, Globe, Settings } from "lucide-react";
+import { useEffect, useState } from 'react';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/enhanced-button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { 
+  Eye, EyeOff, Trash2, Plus, Send, Users, FileText, Settings, MessageSquare, 
+  Handshake, Edit, Save, X, Globe, Mail, Phone, MapPin, Github, MessageCircle, 
+  Youtube, Linkedin, Twitter 
+} from 'lucide-react';
 
 interface Contact {
   id: string;
@@ -19,67 +25,154 @@ interface Contact {
   message: string;
   status: 'new' | 'read' | 'replied';
   created_at: string;
+  updated_at: string;
 }
 
 interface Partnership {
   id: string;
   company: string;
   email: string;
-  phone?: string;
+  phone: string | null;
   partnership_type: string;
   description: string;
-  budget?: string;
-  timeline?: string;
-  status: 'pending' | 'reviewing' | 'approved' | 'rejected';
+  budget: string | null;
+  timeline: string | null;
+  status: 'pending' | 'in_review' | 'approved' | 'rejected';
   created_at: string;
+  updated_at: string;
 }
 
 interface SiteContent {
   id: string;
   content_type: string;
-  title?: string;
-  content?: string;
-  image_url?: string;
+  title: string | null;
+  content: string | null;
+  image_url: string | null;
   is_published: boolean;
-  display_order: number;
+  display_order: number | null;
   created_at: string;
+  updated_at: string;
+}
+
+interface Blog {
+  id: string;
+  title: string;
+  content: string;
+  excerpt: string | null;
+  featured_image_url: string | null;
+  author: string;
+  category: string;
+  tags: string[] | null;
+  status: string;
+  is_featured: boolean;
+  read_time: number | null;
+  created_at: string;
+  updated_at: string;
+}
+
+interface TeamMember {
+  id: string;
+  name: string;
+  position: string;
+  bio: string | null;
+  image_url: string | null;
+  linkedin_url: string | null;
+  github_url: string | null;
+  email: string | null;
+  display_order: number | null;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+interface SiteSetting {
+  id: string;
+  setting_key: string;
+  setting_value: string;
+  setting_type: string;
+  description: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
 export const AdminDashboard = () => {
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [partnerships, setPartnerships] = useState<Partnership[]>([]);
   const [siteContent, setSiteContent] = useState<SiteContent[]>([]);
+  const [blogs, setBlogs] = useState<Blog[]>([]);
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
+  const [siteSettings, setSiteSettings] = useState<SiteSetting[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editingSettings, setEditingSettings] = useState<{[key: string]: boolean}>({});
+  
   const [newContent, setNewContent] = useState({
     content_type: '',
     title: '',
     content: '',
     image_url: ''
   });
+
+  const [newBlog, setNewBlog] = useState({
+    title: '',
+    content: '',
+    excerpt: '',
+    featured_image_url: '',
+    author: 'Bolt X Labs',
+    category: 'Technology',
+    tags: '',
+    status: 'draft',
+    is_featured: false,
+    read_time: 5
+  });
+
+  const [newTeamMember, setNewTeamMember] = useState({
+    name: '',
+    position: '',
+    bio: '',
+    image_url: '',
+    linkedin_url: '',
+    github_url: '',
+    email: '',
+    display_order: 0
+  });
+  
   const { user } = useAuth();
   const { toast } = useToast();
 
   useEffect(() => {
-    if (user?.role === 'admin') {
+    if (user && user.email === 'boltx.1700@gmail.com') {
       fetchData();
     }
   }, [user]);
 
   const fetchData = async () => {
     try {
-      const [contactsRes, partnershipsRes, contentRes] = await Promise.all([
+      const [contactsRes, partnershipsRes, contentRes, blogsRes, teamRes, settingsRes] = await Promise.all([
         supabase.from('contacts').select('*').order('created_at', { ascending: false }),
         supabase.from('partnerships').select('*').order('created_at', { ascending: false }),
-        supabase.from('site_content').select('*').order('display_order', { ascending: true })
+        supabase.from('site_content').select('*').order('display_order', { ascending: true }),
+        supabase.from('blogs').select('*').order('created_at', { ascending: false }),
+        supabase.from('team_members').select('*').order('display_order', { ascending: true }),
+        supabase.from('site_settings').select('*').order('setting_key', { ascending: true })
       ]);
 
-      if (contactsRes.data) setContacts(contactsRes.data as Contact[]);
-      if (partnershipsRes.data) setPartnerships(partnershipsRes.data as Partnership[]);
-      if (contentRes.data) setSiteContent(contentRes.data as SiteContent[]);
-    } catch (error) {
+      if (contactsRes.error) throw contactsRes.error;
+      if (partnershipsRes.error) throw partnershipsRes.error;
+      if (contentRes.error) throw contentRes.error;
+      if (blogsRes.error) throw blogsRes.error;
+      if (teamRes.error) throw teamRes.error;
+      if (settingsRes.error) throw settingsRes.error;
+
+      setContacts(contactsRes.data || []);
+      setPartnerships(partnershipsRes.data || []);
+      setSiteContent(contentRes.data || []);
+      setBlogs(blogsRes.data || []);
+      setTeamMembers(teamRes.data || []);
+      setSiteSettings(settingsRes.data || []);
+    } catch (error: any) {
       toast({
         title: "Error",
-        description: "Failed to fetch data",
+        description: "Failed to fetch data: " + error.message,
         variant: "destructive"
       });
     } finally {
@@ -87,15 +180,167 @@ export const AdminDashboard = () => {
     }
   };
 
-  const updateContactStatus = async (id: string, status: Contact['status']) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, contentType: string) => {
+    setNewContent(prev => ({ ...prev, [contentType]: e.target.value }));
+  };
+
+  const handleBlogInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: string) => {
+    setNewBlog(prev => ({ ...prev, [field]: e.target.value }));
+  };
+
+  const handleTeamMemberInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: string) => {
+    setNewTeamMember(prev => ({ ...prev, [field]: e.target.value }));
+  };
+
+  const handleContentSubmit = async () => {
     try {
-      await supabase.from('contacts').update({ status }).eq('id', id);
-      setContacts(prev => prev.map(c => c.id === id ? { ...c, status } : c));
-      toast({ title: "Status updated successfully" });
-    } catch (error) {
+      const { data, error } = await supabase
+        .from('site_content')
+        .insert([
+          {
+            content_type: newContent.content_type,
+            title: newContent.title,
+            content: newContent.content,
+            image_url: newContent.image_url,
+            is_published: true,
+            display_order: siteContent.length + 1
+          }
+        ]);
+
+      if (error) throw error;
+
+      setSiteContent([...siteContent, ...(data || [])]);
+      setNewContent({ content_type: '', title: '', content: '', image_url: '' });
+
+      toast({
+        title: "Success",
+        description: "Content added successfully"
+      });
+    } catch (error: any) {
       toast({
         title: "Error",
-        description: "Failed to update status",
+        description: "Failed to add content: " + error.message,
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleBlogSubmit = async () => {
+    try {
+      const tagsArray = newBlog.tags ? newBlog.tags.split(',').map(tag => tag.trim()) : [];
+
+      const { data, error } = await supabase
+        .from('blogs')
+        .insert([
+          {
+            title: newBlog.title,
+            content: newBlog.content,
+            excerpt: newBlog.excerpt,
+            featured_image_url: newBlog.featured_image_url,
+            author: newBlog.author,
+            category: newBlog.category,
+            tags: tagsArray,
+            status: newBlog.status,
+            is_featured: newBlog.is_featured,
+            read_time: newBlog.read_time
+          }
+        ]);
+
+      if (error) throw error;
+
+      setBlogs([...blogs, ...(data || [])]);
+      setNewBlog({
+        title: '',
+        content: '',
+        excerpt: '',
+        featured_image_url: '',
+        author: 'Bolt X Labs',
+        category: 'Technology',
+        tags: '',
+        status: 'draft',
+        is_featured: false,
+        read_time: 5
+      });
+
+      toast({
+        title: "Success",
+        description: "Blog post added successfully"
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: "Failed to add blog post: " + error.message,
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleTeamMemberSubmit = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('team_members')
+        .insert([
+          {
+            name: newTeamMember.name,
+            position: newTeamMember.position,
+            bio: newTeamMember.bio,
+            image_url: newTeamMember.image_url,
+            linkedin_url: newTeamMember.linkedin_url,
+            github_url: newTeamMember.github_url,
+            email: newTeamMember.email,
+            display_order: newTeamMember.display_order,
+            is_active: true
+          }
+        ]);
+
+      if (error) throw error;
+
+      setTeamMembers([...teamMembers, ...(data || [])]);
+      setNewTeamMember({
+        name: '',
+        position: '',
+        bio: '',
+        image_url: '',
+        linkedin_url: '',
+        github_url: '',
+        email: '',
+        display_order: 0
+      });
+
+      toast({
+        title: "Success",
+        description: "Team member added successfully"
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: "Failed to add team member: " + error.message,
+        variant: "destructive"
+      });
+    }
+  };
+
+  const updateContactStatus = async (id: string, status: Contact['status']) => {
+    try {
+      const { error } = await supabase
+        .from('contacts')
+        .update({ status })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      setContacts(contacts.map(contact => 
+        contact.id === id ? { ...contact, status } : contact
+      ));
+
+      toast({
+        title: "Success",
+        description: "Contact status updated"
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: "Failed to update contact: " + error.message,
         variant: "destructive"
       });
     }
@@ -103,87 +348,36 @@ export const AdminDashboard = () => {
 
   const updatePartnershipStatus = async (id: string, status: Partnership['status']) => {
     try {
-      await supabase.from('partnerships').update({ status }).eq('id', id);
-      setPartnerships(prev => prev.map(p => p.id === id ? { ...p, status } : p));
-      toast({ title: "Status updated successfully" });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to update status",
-        variant: "destructive"
-      });
-    }
-  };
-
-  const createContent = async () => {
-    if (!newContent.content_type || !newContent.title) {
-      toast({
-        title: "Error",
-        description: "Please fill in required fields",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    try {
-      const { data, error } = await supabase.from('site_content').insert([{
-        ...newContent,
-        admin_id: user?.id
-      }]).select();
+      const { error } = await supabase
+        .from('partnerships')
+        .update({ status })
+        .eq('id', id);
 
       if (error) throw error;
 
-      if (data) {
-        setSiteContent(prev => [...prev, data[0]]);
-        setNewContent({ content_type: '', title: '', content: '', image_url: '' });
-        toast({ title: "Content created successfully" });
-      }
-    } catch (error) {
+      setPartnerships(partnerships.map(partnership => 
+        partnership.id === id ? { ...partnership, status } : partnership
+      ));
+
+      toast({
+        title: "Success",
+        description: "Partnership status updated"
+      });
+    } catch (error: any) {
       toast({
         title: "Error",
-        description: "Failed to create content",
+        description: "Failed to update partnership: " + error.message,
         variant: "destructive"
       });
     }
   };
 
-  const toggleContentPublished = async (id: string, isPublished: boolean) => {
-    try {
-      await supabase.from('site_content').update({ is_published: isPublished }).eq('id', id);
-      setSiteContent(prev => prev.map(c => c.id === id ? { ...c, is_published: isPublished } : c));
-      toast({ 
-        title: isPublished ? "Content published" : "Content unpublished",
-        description: isPublished ? "Content is now visible to everyone" : "Content is now hidden"
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to update content",
-        variant: "destructive"
-      });
-    }
-  };
-
-  const deleteContent = async (id: string) => {
-    try {
-      await supabase.from('site_content').delete().eq('id', id);
-      setSiteContent(prev => prev.filter(c => c.id !== id));
-      toast({ title: "Content deleted successfully" });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to delete content",
-        variant: "destructive"
-      });
-    }
-  };
-
-  if (user?.role !== 'admin') {
+  if (!user || user.email !== 'boltx.1700@gmail.com') {
     return (
       <div className="min-h-screen pt-16 flex items-center justify-center">
-        <Card className="glass-card p-8 text-center">
-          <h2 className="text-2xl font-bold mb-4 neon-text">Access Denied</h2>
-          <p className="text-muted-foreground">You need admin privileges to access this page.</p>
+        <Card className="p-8 text-center">
+          <h1 className="text-2xl font-bold mb-4">Access Denied</h1>
+          <p className="text-muted-foreground">You don't have permission to access the admin dashboard.</p>
         </Card>
       </div>
     );
@@ -194,7 +388,7 @@ export const AdminDashboard = () => {
       <div className="min-h-screen pt-16 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading dashboard...</p>
+          <p className="text-muted-foreground">Loading admin dashboard...</p>
         </div>
       </div>
     );
@@ -204,288 +398,148 @@ export const AdminDashboard = () => {
     <div className="min-h-screen pt-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2 neon-text">Admin Dashboard</h1>
-          <p className="text-muted-foreground">Manage contacts and partnership applications</p>
+          <h1 className="text-3xl font-bold mb-4">Admin Dashboard</h1>
+          <p className="text-muted-foreground">Manage your site content, team, blog posts, and user interactions.</p>
         </div>
 
-        <Tabs defaultValue="content" className="space-y-6">
-          <TabsList className="glass-card">
+        <Tabs defaultValue="settings" className="w-full">
+          <TabsList className="grid grid-cols-6 w-full">
+            <TabsTrigger value="settings" className="flex items-center gap-2">
+              <Settings className="w-4 h-4" />
+              Settings
+            </TabsTrigger>
+            <TabsTrigger value="blogs" className="flex items-center gap-2">
+              <FileText className="w-4 h-4" />
+              Blogs
+            </TabsTrigger>
+            <TabsTrigger value="team" className="flex items-center gap-2">
+              <Users className="w-4 h-4" />
+              Team
+            </TabsTrigger>
             <TabsTrigger value="content" className="flex items-center gap-2">
               <Globe className="w-4 h-4" />
-              Site Content ({siteContent.length})
+              Content
             </TabsTrigger>
             <TabsTrigger value="contacts" className="flex items-center gap-2">
-              <Mail className="w-4 h-4" />
-              Contacts ({contacts.length})
+              <MessageSquare className="w-4 h-4" />
+              Contacts
             </TabsTrigger>
             <TabsTrigger value="partnerships" className="flex items-center gap-2">
-              <Building className="w-4 h-4" />
-              Partnerships ({partnerships.length})
+              <Handshake className="w-4 h-4" />
+              Partnerships
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="content" className="space-y-6">
-            <Card className="glass-card p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <Plus className="w-5 h-5" />
-                <h3 className="text-lg font-semibold">Create New Content</h3>
+          <TabsContent value="settings" className="space-y-6">
+            <Card className="p-6">
+              <h2 className="text-2xl font-bold mb-4">Site Settings</h2>
+              <p className="text-sm text-muted-foreground mb-4">Manage your site's editable content and social links.</p>
+              <div className="space-y-4">
+                {siteSettings.map((setting) => (
+                  <div key={setting.id} className="border rounded p-4">
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <h4 className="font-semibold">{setting.setting_key.replace(/_/g, ' ').toUpperCase()}</h4>
+                        <p className="text-xs text-muted-foreground">{setting.description}</p>
+                        <div className="mt-2">
+                          {editingSettings[setting.id] ? (
+                            <div className="flex gap-2">
+                              <Input
+                                value={setting.setting_value}
+                                onChange={(e) => setSiteSettings(siteSettings.map(s => 
+                                  s.id === setting.id ? {...s, setting_value: e.target.value} : s
+                                ))}
+                                className="flex-1"
+                              />
+                              <Button size="sm" onClick={() => {
+                                // Update setting
+                                supabase.from('site_settings').update({ setting_value: setting.setting_value }).eq('id', setting.id);
+                                setEditingSettings(prev => ({ ...prev, [setting.id]: false }));
+                              }}>
+                                <Save className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          ) : (
+                            <div className="flex justify-between items-center">
+                              <p className="text-sm bg-muted p-2 rounded flex-1 mr-2">{setting.setting_value}</p>
+                              <Button variant="outline" size="sm" onClick={() => setEditingSettings(prev => ({ ...prev, [setting.id]: true }))}>
+                                <Edit className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="content-type">Content Type *</Label>
-                  <Input
-                    id="content-type"
-                    value={newContent.content_type}
-                    onChange={(e) => setNewContent(prev => ({ ...prev, content_type: e.target.value }))}
-                    placeholder="e.g., hero, feature, testimonial"
-                    className="glass-card"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="content-title">Title *</Label>
-                  <Input
-                    id="content-title"
-                    value={newContent.title}
-                    onChange={(e) => setNewContent(prev => ({ ...prev, title: e.target.value }))}
-                    placeholder="Content title"
-                    className="glass-card"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="content-image">Image URL</Label>
-                  <Input
-                    id="content-image"
-                    value={newContent.image_url}
-                    onChange={(e) => setNewContent(prev => ({ ...prev, image_url: e.target.value }))}
-                    placeholder="https://example.com/image.jpg"
-                    className="glass-card"
-                  />
-                </div>
-                <div className="space-y-2 md:col-span-2">
-                  <Label htmlFor="content-content">Content</Label>
-                  <Textarea
-                    id="content-content"
-                    value={newContent.content}
-                    onChange={(e) => setNewContent(prev => ({ ...prev, content: e.target.value }))}
-                    placeholder="Content text or description"
-                    className="glass-card"
-                    rows={3}
-                  />
-                </div>
-              </div>
-              <Button onClick={createContent} className="mt-4">
-                <Plus className="w-4 h-4 mr-2" />
-                Create Content
-              </Button>
             </Card>
-
-            <div className="space-y-4">
-              {siteContent.map((content) => (
-                <Card key={content.id} className="glass-card p-6">
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <div className="flex items-center gap-2 mb-2">
-                        <Badge variant="outline" className="capitalize">
-                          {content.content_type}
-                        </Badge>
-                        <Badge 
-                          variant={content.is_published ? "default" : "secondary"}
-                        >
-                          {content.is_published ? "Published" : "Draft"}
-                        </Badge>
-                      </div>
-                      <h3 className="font-semibold text-lg">{content.title}</h3>
-                      {content.content && (
-                        <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
-                          {content.content}
-                        </p>
-                      )}
-                      {content.image_url && (
-                        <p className="text-xs text-muted-foreground mt-2">
-                          Image: {content.image_url}
-                        </p>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                      <Calendar className="w-3 h-3" />
-                      {new Date(content.created_at).toLocaleDateString()}
-                    </div>
-                  </div>
-                  
-                  <div className="flex gap-2">
-                    <Button 
-                      size="sm"
-                      variant={content.is_published ? "secondary" : "default"}
-                      onClick={() => toggleContentPublished(content.id, !content.is_published)}
-                    >
-                      <Globe className="w-4 h-4 mr-2" />
-                      {content.is_published ? "Unpublish" : "Publish"}
-                    </Button>
-                    <Button 
-                      size="sm"
-                      variant="destructive"
-                      onClick={() => deleteContent(content.id)}
-                    >
-                      <X className="w-4 h-4 mr-2" />
-                      Delete
-                    </Button>
-                  </div>
-                </Card>
-              ))}
-            </div>
           </TabsContent>
 
-          <TabsContent value="contacts" className="space-y-4">
-            {contacts.length === 0 ? (
-              <Card className="glass-card p-8 text-center">
-                <p className="text-muted-foreground">No contact messages yet.</p>
-              </Card>
-            ) : (
-              contacts.map((contact) => (
-                <Card key={contact.id} className="glass-card p-6">
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <h3 className="font-semibold text-lg">{contact.name}</h3>
-                      <p className="text-sm text-muted-foreground">{contact.email}</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge 
-                        variant={contact.status === 'new' ? 'default' : contact.status === 'read' ? 'secondary' : 'outline'}
-                        className="capitalize"
-                      >
-                        {contact.status}
-                      </Badge>
-                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                        <Calendar className="w-3 h-3" />
-                        {new Date(contact.created_at).toLocaleDateString()}
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="mb-4">
-                    <h4 className="font-medium mb-2">{contact.subject}</h4>
-                    <p className="text-sm text-muted-foreground">{contact.message}</p>
-                  </div>
-                  
-                  <div className="flex gap-2">
-                    {contact.status === 'new' && (
-                      <Button 
-                        size="sm" 
-                        variant="secondary"
-                        onClick={() => updateContactStatus(contact.id, 'read')}
-                      >
-                        <Eye className="w-4 h-4 mr-2" />
-                        Mark as Read
-                      </Button>
-                    )}
-                    {contact.status !== 'replied' && (
-                      <Button 
-                        size="sm"
-                        onClick={() => updateContactStatus(contact.id, 'replied')}
-                      >
-                        <Check className="w-4 h-4 mr-2" />
-                        Mark as Replied
-                      </Button>
-                    )}
-                  </div>
-                </Card>
-              ))
-            )}
-          </TabsContent>
-
-          <TabsContent value="partnerships" className="space-y-4">
-            {partnerships.length === 0 ? (
-              <Card className="glass-card p-8 text-center">
-                <p className="text-muted-foreground">No partnership applications yet.</p>
-              </Card>
-            ) : (
-              partnerships.map((partnership) => (
-                <Card key={partnership.id} className="glass-card p-6">
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <h3 className="font-semibold text-lg">{partnership.company}</h3>
-                      <p className="text-sm text-muted-foreground">{partnership.email}</p>
-                      {partnership.phone && (
-                        <p className="text-sm text-muted-foreground">{partnership.phone}</p>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge 
-                        variant={
-                          partnership.status === 'pending' ? 'default' : 
-                          partnership.status === 'reviewing' ? 'secondary' :
-                          partnership.status === 'approved' ? 'outline' : 'destructive'
-                        }
-                        className="capitalize"
-                      >
-                        {partnership.status}
-                      </Badge>
-                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                        <Calendar className="w-3 h-3" />
-                        {new Date(partnership.created_at).toLocaleDateString()}
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="grid md:grid-cols-2 gap-4 mb-4">
-                    <div>
-                      <p className="text-sm font-medium">Partnership Type</p>
-                      <p className="text-sm text-muted-foreground capitalize">{partnership.partnership_type.replace('_', ' ')}</p>
-                    </div>
-                    {partnership.budget && (
+          <TabsContent value="contacts" className="space-y-6">
+            <Card className="p-6">
+              <h2 className="text-2xl font-bold mb-4">Contact Messages</h2>
+              <div className="space-y-4">
+                {contacts.map((contact) => (
+                  <div key={contact.id} className="border rounded p-4">
+                    <div className="flex justify-between items-start">
                       <div>
-                        <p className="text-sm font-medium">Budget</p>
-                        <p className="text-sm text-muted-foreground">{partnership.budget}</p>
+                        <h4 className="font-semibold">{contact.name} - {contact.subject}</h4>
+                        <p className="text-sm text-muted-foreground">{contact.email}</p>
+                        <p className="text-sm mt-2">{contact.message}</p>
                       </div>
-                    )}
-                    {partnership.timeline && (
-                      <div>
-                        <p className="text-sm font-medium">Timeline</p>
-                        <p className="text-sm text-muted-foreground">{partnership.timeline}</p>
+                      <div className="flex gap-2">
+                        <Badge variant={contact.status === 'new' ? 'destructive' : 'default'}>
+                          {contact.status}
+                        </Badge>
+                        <Button variant="outline" size="sm" onClick={() => updateContactStatus(contact.id, contact.status === 'new' ? 'read' : 'replied')}>
+                          Mark as {contact.status === 'new' ? 'Read' : 'Replied'}
+                        </Button>
                       </div>
-                    )}
+                    </div>
                   </div>
-                  
-                  <div className="mb-4">
-                    <p className="text-sm font-medium mb-2">Description</p>
-                    <p className="text-sm text-muted-foreground">{partnership.description}</p>
-                  </div>
-                  
-                  <div className="flex gap-2">
-                    {partnership.status === 'pending' && (
-                      <Button 
-                        size="sm" 
-                        variant="secondary"
-                        onClick={() => updatePartnershipStatus(partnership.id, 'reviewing')}
-                      >
-                        <Eye className="w-4 h-4 mr-2" />
-                        Start Review
-                      </Button>
-                    )}
-                    {partnership.status !== 'approved' && partnership.status !== 'rejected' && (
-                      <>
-                        <Button 
-                          size="sm"
-                          onClick={() => updatePartnershipStatus(partnership.id, 'approved')}
-                        >
-                          <Check className="w-4 h-4 mr-2" />
-                          Approve
-                        </Button>
-                        <Button 
-                          size="sm"
-                          variant="destructive"
-                          onClick={() => updatePartnershipStatus(partnership.id, 'rejected')}
-                        >
-                          <X className="w-4 h-4 mr-2" />
-                          Reject
-                        </Button>
-                      </>
-                    )}
-                  </div>
-                </Card>
-              ))
-            )}
+                ))}
+              </div>
+            </Card>
           </TabsContent>
+
+          <TabsContent value="partnerships" className="space-y-6">
+            <Card className="p-6">
+              <h2 className="text-2xl font-bold mb-4">Partnership Applications</h2>
+              <div className="space-y-4">
+                {partnerships.map((partnership) => (
+                  <div key={partnership.id} className="border rounded p-4">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h4 className="font-semibold">{partnership.company}</h4>
+                        <p className="text-sm text-muted-foreground">{partnership.email}</p>
+                        <p className="text-sm mt-2">{partnership.description}</p>
+                      </div>
+                      <div className="flex gap-2">
+                        <Badge>{partnership.status}</Badge>
+                        <Select value={partnership.status} onValueChange={(value) => updatePartnershipStatus(partnership.id, value as Partnership['status'])}>
+                          <SelectTrigger className="w-32">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="pending">Pending</SelectItem>
+                            <SelectItem value="in_review">In Review</SelectItem>
+                            <SelectItem value="approved">Approved</SelectItem>
+                            <SelectItem value="rejected">Rejected</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </TabsContent>
+
+          {/* Placeholder tabs for blogs, team, and content */}
+          <TabsContent value="blogs"><Card className="p-6"><h2>Blog Management Coming Soon</h2></Card></TabsContent>
+          <TabsContent value="team"><Card className="p-6"><h2>Team Management Coming Soon</h2></Card></TabsContent>
+          <TabsContent value="content"><Card className="p-6"><h2>Content Management Coming Soon</h2></Card></TabsContent>
         </Tabs>
       </div>
     </div>
