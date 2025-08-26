@@ -20,7 +20,14 @@ export const AuthDialog = ({ children }: AuthDialogProps) => {
   const { toast } = useToast();
 
   const [signInData, setSignInData] = useState({ email: "", password: "" });
-  const [signUpData, setSignUpData] = useState({ email: "", password: "", confirmPassword: "" });
+  const [signUpData, setSignUpData] = useState({ 
+    email: "", 
+    password: "", 
+    confirmPassword: "",
+    firstName: "",
+    lastName: "",
+    username: ""
+  });
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,7 +66,11 @@ export const AuthDialog = ({ children }: AuthDialogProps) => {
 
     setLoading(true);
     
-    const { error } = await signUp(signUpData.email, signUpData.password);
+    const { error } = await signUp(signUpData.email, signUpData.password, {
+      firstName: signUpData.firstName,
+      lastName: signUpData.lastName,
+      username: signUpData.username
+    });
     
     if (error) {
       toast({
@@ -136,6 +147,42 @@ export const AuthDialog = ({ children }: AuthDialogProps) => {
           <TabsContent value="signup">
             <Card className="glass-card border-primary/20">
               <form onSubmit={handleSignUp} className="space-y-4 p-6">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-firstname">First Name</Label>
+                    <Input
+                      id="signup-firstname"
+                      type="text"
+                      value={signUpData.firstName}
+                      onChange={(e) => setSignUpData({ ...signUpData, firstName: e.target.value })}
+                      className="glass-card"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-lastname">Last Name</Label>
+                    <Input
+                      id="signup-lastname"
+                      type="text"
+                      value={signUpData.lastName}
+                      onChange={(e) => setSignUpData({ ...signUpData, lastName: e.target.value })}
+                      className="glass-card"
+                      required
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="signup-username">Username</Label>
+                  <Input
+                    id="signup-username"
+                    type="text"
+                    value={signUpData.username}
+                    onChange={(e) => setSignUpData({ ...signUpData, username: e.target.value })}
+                    className="glass-card"
+                    placeholder="username"
+                    required
+                  />
+                </div>
                 <div className="space-y-2">
                   <Label htmlFor="signup-email">Email</Label>
                   <Input

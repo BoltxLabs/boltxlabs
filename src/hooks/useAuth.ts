@@ -11,7 +11,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  signUp: (email: string, password: string) => Promise<{ error?: string }>;
+  signUp: (email: string, password: string, metadata?: { firstName?: string; lastName?: string; username?: string }) => Promise<{ error?: string }>;
   signIn: (email: string, password: string) => Promise<{ error?: string }>;
   signOut: () => Promise<void>;
 }
@@ -64,13 +64,19 @@ export const useAuthProvider = (): AuthContextType => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = async (email: string, password: string) => {
+  const signUp = async (email: string, password: string, metadata?: { firstName?: string; lastName?: string; username?: string }) => {
     try {
       const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: window.location.origin
+          emailRedirectTo: window.location.origin,
+          data: {
+            first_name: metadata?.firstName || '',
+            last_name: metadata?.lastName || '',
+            username: metadata?.username || '',
+            full_name: `${metadata?.firstName || ''} ${metadata?.lastName || ''}`.trim()
+          }
         }
       });
 
@@ -81,6 +87,8 @@ export const useAuthProvider = (): AuthContextType => {
         body: {
           type: 'new_member',
           email: email,
+          name: `${metadata?.firstName || ''} ${metadata?.lastName || ''}`.trim(),
+          username: metadata?.username || '',
           timestamp: new Date().toISOString()
         }
       });
