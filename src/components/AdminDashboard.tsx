@@ -163,8 +163,8 @@ export const AdminDashboard = () => {
       if (teamRes.error) throw teamRes.error;
       if (settingsRes.error) throw settingsRes.error;
 
-      setContacts(contactsRes.data || []);
-      setPartnerships(partnershipsRes.data || []);
+      setContacts((contactsRes.data || []) as Contact[]);
+      setPartnerships((partnershipsRes.data || []) as Partnership[]);
       setSiteContent(contentRes.data || []);
       setBlogs(blogsRes.data || []);
       setTeamMembers(teamRes.data || []);
